@@ -1,34 +1,49 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import './App.css'
+import { useQuery } from "react-query";
 
 function App() {
-  const [count, setCount] = useState(0)
+  interface PokemonProps {
+    name: string;
+    url: string;
+  }
+
+  const { isLoading, error, data } = useQuery("pokemonList", () =>
+    fetch("https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0").then(
+      (res) => res.json()
+    )
+  );
+
+  if (isLoading) {
+    return <div>로오딩중</div>;
+  }
+
+  if (error) {
+    return <div>데이터를 불러오는중 에러가 발생하였습니다</div>;
+  }
 
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+    <div className="">
+      <div className="h-14 bg-gradient-to-r from-cyan-500 to-blue-500"></div>
+      <div className="h-14 bg-gradient-to-r from-sky-500 to-indigo-500"></div>
+      <h1 className="text-3xl font-bold underline">Hello world!</h1>
+      <header>
+        <input
+          type={"text"}
+          name={"keyword"}
+          placeholder={"포켓몬 번호를 검색해보세요!"}
+        />
+        <input type={"submit"} value={"검색하기"} />
+      </header>
+      <body>
+        {data.results.map((pokemon: PokemonProps) => (
+          <div key={pokemon.url}>
+            <img src="vite.svg" />
+            <p>{pokemon.name}</p>
+          </div>
+        ))}
+      </body>
+      <footer></footer>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
