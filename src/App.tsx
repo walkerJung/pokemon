@@ -13,26 +13,40 @@ function App() {
   );
 
   if (isLoading) {
-    return <div>로오딩중</div>;
+    return <h1>Loading...!!!</h1>;
   }
 
   if (error) {
-    return <div>데이터를 불러오는중 에러가 발생하였습니다</div>;
+    return <h1>Error Occurred...!!!</h1>;
   }
 
   return (
-    <div className="">
-      <div className="h-14 bg-gradient-to-r from-cyan-500 to-blue-500"></div>
-      <div className="h-14 bg-gradient-to-r from-sky-500 to-indigo-500"></div>
-      <h1 className="text-3xl font-bold underline">Hello world!</h1>
-      <header>
+    <div className="flex flex-col my-0 mx-auto w-[420px]">
+      {/*  */}
+      <div className="h-[100px] w-[100%] bg-gradient-to-r from-sky-500 to-indigo-500 flex justify-center items-center mb-[15px]">
+        <h1 className="text-3xl font-bold underline text-white">
+          Hello Pokemon!
+        </h1>
+      </div>
+      {/*  */}
+
+      {/* 검색 시작 */}
+      <header className="border-indigo-500/50 mb-[15px] flex gap-[15px] w-[100%]">
         <input
+          className="rounded-md border-2 border-indigo-500/50 w-[70%]"
           type={"text"}
           name={"keyword"}
           placeholder={"포켓몬 번호를 검색해보세요!"}
         />
-        <input type={"submit"} value={"검색하기"} />
+        <input
+          className="rounded-md border-2 border-indigo-500/50 w-[30%]"
+          type={"submit"}
+          value={"검색"}
+        />
       </header>
+      {/* 검색 끝 */}
+
+      {/* 포켓못 리스트 시작 */}
       <body>
         {data.results.map((pokemon: PokemonProps) => (
           <div key={pokemon.url}>
@@ -41,6 +55,7 @@ function App() {
           </div>
         ))}
       </body>
+      {/* 포켓못 리스트 시작 */}
       <footer></footer>
     </div>
   );
