@@ -1,16 +1,28 @@
+import { useState } from "react";
 import { useQuery } from "react-query";
+import { getPokemonList } from "./api/pokemon";
+import Detail from "./detail";
+
+interface PokemonProps {
+  name: string;
+  url: string;
+}
 
 function App() {
-  interface PokemonProps {
-    name: string;
-    url: string;
-  }
+  const [pokemonId, setPokemonId] = useState<number>();
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  const { isLoading, error, data } = useQuery("pokemonList", () =>
-    fetch("https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0").then(
-      (res) => res.json()
-    )
-  );
+  const { isLoading, error, data } = useQuery("pokemonList", getPokemonList);
+
+  const handlePokemonId = (url: string) => {
+    const POKEMONID = url.split("/")[6];
+    return parseInt(POKEMONID);
+  };
+
+  const handleClick = (id: number) => {
+    setIsModalOpen(true);
+    setPokemonId(id);
+  };
 
   if (isLoading) {
     return <h1>Loading...!!!</h1>;
@@ -47,16 +59,26 @@ function App() {
       {/* 검색 끝 */}
 
       {/* 포켓못 리스트 시작 */}
-      <body>
-        {data.results.map((pokemon: PokemonProps) => (
-          <div key={pokemon.url}>
-            <img src="vite.svg" />
-            <p>{pokemon.name}</p>
-          </div>
-        ))}
+      <body className="flex flex-wrap justify-center">
+        {data.results.map((pokemon: PokemonProps) => {
+          let pokemonId = handlePokemonId(pokemon.url);
+          return (
+            <div key={pokemonId} onClick={() => handleClick(pokemonId)}>
+              <img
+                src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png`}
+              />
+              <p className="text-center">{pokemon.name}</p>
+            </div>
+          );
+        })}
       </body>
       {/* 포켓못 리스트 시작 */}
-      <footer></footer>
+
+      {/* 포켓몬 상세보기 시작 */}
+      {isModalOpen && (
+        <Detail pokemonId={pokemonId} setIsModalOpen={setIsModalOpen} />
+      )}
+      {/* 포켓몬 상세보기 끝 */}
     </div>
   );
 }
