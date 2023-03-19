@@ -11,6 +11,7 @@ interface PokemonProps {
 function App() {
   const [pokemonId, setPokemonId] = useState<number>();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [pokemonName, setPokemonName] = useState<string>();
 
   const { isLoading, error, data } = useQuery("pokemonList", getPokemonList);
 
@@ -19,9 +20,10 @@ function App() {
     return parseInt(POKEMONID);
   };
 
-  const handleClick = (id: number) => {
-    setIsModalOpen(true);
+  const handleClick = (id: number, name: string) => {
+    setPokemonName(name);
     setPokemonId(id);
+    setIsModalOpen(true);
   };
 
   if (isLoading) {
@@ -63,7 +65,10 @@ function App() {
         {data.results.map((pokemon: PokemonProps) => {
           let pokemonId = handlePokemonId(pokemon.url);
           return (
-            <div key={pokemonId} onClick={() => handleClick(pokemonId)}>
+            <div
+              key={pokemonId}
+              onClick={() => handleClick(pokemonId, pokemon.name)}
+            >
               <img
                 src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png`}
               />
@@ -76,7 +81,11 @@ function App() {
 
       {/* 포켓몬 상세보기 시작 */}
       {isModalOpen && (
-        <Detail pokemonId={pokemonId} setIsModalOpen={setIsModalOpen} />
+        <Detail
+          pokemonId={pokemonId}
+          pokemonName={pokemonName}
+          setIsModalOpen={setIsModalOpen}
+        />
       )}
       {/* 포켓몬 상세보기 끝 */}
     </div>
