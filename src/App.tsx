@@ -1,12 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useQuery, useInfiniteQuery } from "react-query";
 import { fetchPokemons, searchPokemon } from "./api/pokemon";
-import Detail from "./detail";
-
-interface PokemonProps {
-  name: string;
-  url: string;
-}
+import DefaultList from "./component/DefaultList";
+import Detail from "./component/Detail";
+import Search from "./component/Search";
+import SearchList from "./component/SearchList";
 
 function App() {
   const [pokemonId, setPokemonId] = useState<number>();
@@ -32,11 +30,6 @@ function App() {
       enabled: !!keyword,
     }
   );
-  console.log(searchPokemonData);
-  const handlePokemonId = (url: string) => {
-    const POKEMONID = url.split("/")[6];
-    return parseInt(POKEMONID);
-  };
 
   const handleClick = (id: number, name: string) => {
     setPokemonName(name);
@@ -63,66 +56,32 @@ function App() {
       </div>
 
       {/* 검색 시작 */}
-      <header className="border-indigo-500/50 mb-[15px] flex gap-[15px] w-[100%]">
-        <input
-          className="rounded-md border-2 border-indigo-500/50 w-[100%]"
-          type={"text"}
-          name={"keyword"}
-          placeholder={"포켓몬 번호를 검색해보세요!"}
-          onChange={(e) => {
-            setKeyword(e.target.value);
-          }}
-        />
-      </header>
+      <Search setKeyword={setKeyword} />
       {/* 검색 끝 */}
 
       {/* 포켓못 리스트 시작 */}
-      <body className="flex flex-wrap justify-center">
-        {searchPokemonData && (
-          <div
-            key={searchPokemonData.id}
-            onClick={() =>
-              handleClick(searchPokemonData.id, searchPokemonData.name)
-            }
+      {searchPokemonData ? (
+        <SearchList
+          searchPokemonData={searchPokemonData}
+          handleClick={handleClick}
+        />
+      ) : (
+        <>
+          <DefaultList pokemonList={pokemonList} handleClick={handleClick} />
+          <button
+            className="m-5"
+            onClick={() => fetchNextPage()}
+            disabled={!hasNextPage || isFetchingNextPage}
           >
-            <img
-              src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${searchPokemonData.id}.png`}
-            />
-            <p className="text-center">{searchPokemonData.name}</p>
-          </div>
-        )}
-
-        {!searchPokemonData &&
-          pokemonList.map((pokemon: PokemonProps) => {
-            let pokemonId = handlePokemonId(pokemon.url);
-            return (
-              <div
-                key={pokemonId}
-                onClick={() => handleClick(pokemonId, pokemon.name)}
-              >
-                <img
-                  src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png`}
-                />
-                <p className="text-center">{pokemon.name}</p>
-              </div>
-            );
-          })}
-      </body>
-      {/* 포켓못 리스트 시작 */}
-
-      {!searchPokemonData && (
-        <button
-          className="m-5"
-          onClick={() => fetchNextPage()}
-          disabled={!hasNextPage || isFetchingNextPage}
-        >
-          {isFetchingNextPage
-            ? "Loading...!!!"
-            : hasNextPage
-            ? "Load More"
-            : "Nothing more to load"}
-        </button>
+            {isFetchingNextPage
+              ? "Loading...!!!"
+              : hasNextPage
+              ? "Load More"
+              : "Nothing more to load"}
+          </button>
+        </>
       )}
+      {/* 포켓못 리스트 시작 */}
 
       {/* 포켓몬 상세보기 시작 */}
       {isModalOpen && (

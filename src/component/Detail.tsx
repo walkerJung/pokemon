@@ -1,7 +1,7 @@
-import { getPokemonDetail, getPokemonEvolutionChain } from "./api/pokemon";
+import { getPokemonDetail, getPokemonEvolutionChain } from "../api/pokemon";
 import { useQuery } from "react-query";
 
-function Detail(props: any) {
+const Detail = (props: any) => {
   const { pokemonId, pokemonName, setIsModalOpen } = props;
 
   const {
@@ -10,11 +10,7 @@ function Detail(props: any) {
     data: pokemonDetailData,
   } = useQuery(["pokemonDetail", { pokemonId }], getPokemonDetail);
 
-  const {
-    isLoading: getPokemonEvolutionChainLoading,
-    error: getPokemonEvolutionChainError,
-    data: getPokemonEvolutionChainData,
-  } = useQuery(
+  const { data: getPokemonEvolutionChainData } = useQuery(
     ["getPokemonEvolutionChain", { pokemonName }],
     getPokemonEvolutionChain
   );
@@ -76,6 +72,6 @@ function Detail(props: any) {
       </div>
     </div>
   );
-}
+};
 
 export default Detail;
