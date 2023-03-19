@@ -1,3 +1,9 @@
+export const searchPokemon = async ({ queryKey }: any) => {
+  return fetch(`https://pokeapi.co/api/v2/pokemon/${queryKey[1].keyword}`).then(
+    (res) => res.json()
+  );
+};
+
 export const fetchPokemons = async ({ pageParam = 0 }) => {
   const response = await fetch(
     `https://pokeapi.co/api/v2/pokemon?offset=${pageParam}&limit=40`
