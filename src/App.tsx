@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useQuery } from "react-query";
-import { getPokemonList } from "./api/pokemon";
+import { useInfiniteQuery } from "react-query";
+import { fetchPokemons } from "./api/pokemon";
 import Detail from "./detail";
 
 interface PokemonProps {
@@ -13,7 +13,16 @@ function App() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [pokemonName, setPokemonName] = useState<string>();
 
-  const { isLoading, error, data } = useQuery("pokemonList", getPokemonList);
+  const {
+    data,
+    error,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery("pokemons", fetchPokemons, {
+    getNextPageParam: (lastPage) => lastPage.next,
+  });
 
   const handlePokemonId = (url: string) => {
     const POKEMONID = url.split("/")[6];
@@ -33,6 +42,8 @@ function App() {
   if (error) {
     return <h1>Error Occurred...!!!</h1>;
   }
+
+  const pokemonList = data?.pages.flatMap((page) => page.results) ?? [];
 
   return (
     <div className="flex flex-col my-0 mx-auto w-[420px]">
@@ -62,7 +73,7 @@ function App() {
 
       {/* 포켓못 리스트 시작 */}
       <body className="flex flex-wrap justify-center">
-        {data.results.map((pokemon: PokemonProps) => {
+        {pokemonList.map((pokemon: PokemonProps) => {
           let pokemonId = handlePokemonId(pokemon.url);
           return (
             <div
@@ -78,6 +89,17 @@ function App() {
         })}
       </body>
       {/* 포켓못 리스트 시작 */}
+      <button
+        className="m-5"
+        onClick={() => fetchNextPage()}
+        disabled={!hasNextPage || isFetchingNextPage}
+      >
+        {isFetchingNextPage
+          ? "Loading...!!!"
+          : hasNextPage
+          ? "Load More"
+          : "Nothing more to load"}
+      </button>
 
       {/* 포켓몬 상세보기 시작 */}
       {isModalOpen && (

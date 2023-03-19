@@ -1,7 +1,12 @@
-export const getPokemonList = async () => {
-  return await fetch(
-    "https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0"
-  ).then((res) => res.json());
+export const fetchPokemons = async ({ pageParam = 0 }) => {
+  const response = await fetch(
+    `https://pokeapi.co/api/v2/pokemon?offset=${pageParam}&limit=40`
+  );
+  if (!response.ok) {
+    throw new Error("Failed to fetch pokemons");
+  }
+  const data = await response.json();
+  return { results: data.results, next: data.next ? pageParam + 40 : null };
 };
 
 export const getPokemonDetail = async ({ queryKey }: any) => {
